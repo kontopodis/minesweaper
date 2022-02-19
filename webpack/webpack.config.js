@@ -1,4 +1,6 @@
 'use strict';
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
 
 const path = require('path');
 const root = path.join(__dirname, '..');
@@ -9,7 +11,12 @@ module.exports = (env) => {
         entry: {
             main: path.join(root, 'src', 'main')
         },
+        devServer: {
 
+            static: './dist',
+            hot:true
+        
+          },
         output: {
             filename: 'bundle.js',
             path: path.join(root, 'dist')
@@ -33,7 +40,15 @@ module.exports = (env) => {
             ]
         },
 
-        plugins: []
+        plugins: [
+
+            new HtmlWebpackPlugin({
+        
+              title: "package.name",
+        
+            }),
+        
+          ],
     };
 
     // Builds
