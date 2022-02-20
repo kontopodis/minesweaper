@@ -17,6 +17,7 @@ git clone https://github.com/kontopodis/minesweaper.git
 ```
 
 ```js
+npm install
 npm run dev
 ```
 
