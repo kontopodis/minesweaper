@@ -44,7 +44,7 @@ module.exports = (env) => {
 
             new HtmlWebpackPlugin({
         
-              title: "package.name",
+              title: "MineSweaper",
         
             }),
         

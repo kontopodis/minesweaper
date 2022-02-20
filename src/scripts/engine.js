@@ -1,222 +1,175 @@
-import * as PIXI from 'pixi.js'
+import * as PIXI from "pixi.js";
+import {
+    printEmpty,
+    printWhite,
+    printNum,
+    printMine
+} from './views'
+import Grid from './grid'
+var GRID= [];
+var Container;
+export const Game = (COLUMNS,ROWS,MINES,app)=>{
 
-export const printEmpty = (row,app,handleClick) =>{
+    GRID = Grid(COLUMNS, ROWS, MINES);
 
-    const cell = new PIXI.Graphics();
-    cell.lineStyle(1, 0x000000, 1);
-    cell.beginFill(0x999999);
-    cell.drawRect(row.coordinates[0]*25+2, row.coordinates[1]*25, 23, 23);
-    cell.endFill();
-    cell.interactive = true;
-    cell.on("pointerdown",(e)=>{
-        handleClick(row)
+    let container = new PIXI.Container()
+    container.name = "Container"
+    container.x = (screen.width - (COLUMNS*25))/2
+    container.y = 50
+    app.stage.addChild(container)
+    Container = container
     
-    })
+
     
-   app.stage.addChild(cell);
-}
 
-
-export const printWhite = (row , app) =>{
-
-    const cell = new PIXI.Graphics();
-    cell.lineStyle(1, 0xffffff, 1);
-    cell.beginFill(0xffffff);
-    cell.drawRect(row.coordinates[0]*25+2, row.coordinates[1]*25, 23, 23);
-    cell.endFill();
-    cell.interactive = false;
-    app.stage.addChild(cell);
-}
-
-export const printNum = (row, app) =>{
-  
-    const cell = new PIXI.Graphics();
-    cell.lineStyle(1, 0x000000, 1);
-    cell.beginFill(0x999999);
-    cell.drawRect(row.coordinates[0]*25+2, row.coordinates[1]*25, 23, 23);
-    cell.endFill();
-    cell.interactive = false;
-    const label = new PIXI.Text(row.value,style);
-    label.x = row.coordinates[0]*25;
-    label.y = row.coordinates[1]*25;
- 
-    app.stage.addChild(cell);
-    app.stage.addChild(label)
-}
-
-export const printMine = (row,app) =>{
-    const cell = new PIXI.Graphics();
-
-                cell.lineStyle(1, 0x000000, 1);
-
-                cell.beginFill(0x999999);
-                cell.drawRect(row.coordinates[0]*25+2, row.coordinates[1]*25, 23, 23);
-                cell.endFill();
-
-                cell.moveTo(row.coordinates[0]*25+2, row.coordinates[1]*25)
-                cell.lineStyle(1, 0x000000, 1);
-
-                cell.beginFill(0xf90000, 1);
-                cell.drawCircle(row.coordinates[0]*25+13, row.coordinates[1]*25+12, 5);
-                cell.moveTo(row.coordinates[0]*25+2, row.coordinates[1]*25)
-                cell.lineTo(row.coordinates[0]*25+25, row.coordinates[1]*25+25)
-                cell.moveTo(row.coordinates[0]*25+2, row.coordinates[1]*25+25)
-                cell.lineTo(row.coordinates[0]*25+25, row.coordinates[1]*25)
-                cell.endFill();
-        
-                cell.interactive = false;
-            
-                app.stage.addChild(cell);
-}
-export const checkAround = (row , grid)=>{
-    let p = row.coordinates
- 
-            // 8 checks
-            //previous column
-            if(p[0]===0){}else{
     
-                //top row
-                if(
+}
+export const Draw = () => {
+    Container.removeChildren();
 
-                     p[1] > 0
-                     &&
-                     grid[p[0]-1][p[1]-1]
-                     &&
-                     grid[p[0]-1][p[1]-1].value === 0
-                     && grid[p[0]-1][p[1]-1].visible ===false
-                     ){
-                     
-                     grid[p[0]-1][p[1]-1].visible = true
-                     let n = grid[p[0]-1][p[1]-1]
-                checkAround(n,grid)
-                 }
-                 //middle row
-                 if(               
+    GRID.map((rows, columnIndex) => {
+        rows.map((row, rowIndex) => {
+            if (row.visible === true) {
+                if (row.value === "m") {
+                    printMine(row, Container);
+                }
 
-                     grid[p[0]-1][p[1]]
-                     && 
-                     grid[p[0]-1][p[1]].value === 0
-                     &&
-                     grid[p[0]-1][p[1]].visible === false
-                     ){
-                     
-                     grid[p[0]-1][p[1]].visible = true
-                     let n = grid[p[0]-1][p[1]]
-                     checkAround(n,grid)
-                 }
-                 //bottom row
-                 if(
+                if (row.value > 0) {
+                    printNum(row, Container);
+                }
 
-                     p[1] <= grid[p[0]].length
-                     &&
-                     grid[p[0]-1][p[1]+1]
-                     &&
-                     grid[p[0]-1][p[1]+1].value === 0
-                     &&
-                     grid[p[0]-1][p[1]+1].visible === false
-                     ){
-                     
-                     grid[p[0]-1][p[1]+1].visible=true
-                     let n = grid[p[0]-1][p[1]+1]
-                     checkAround(n,grid)
-                 }
+                if (row.value === 0) {
+                    printWhite(row, Container);
+                }
+            } else {
+                printEmpty(row, Container, handleClick);
             }
-            //same column
-                // top row
-                if(
-                    p[1] > 0
-                    &&
-                    grid[p[0]][p[1]-1]
-                    &&
-                    grid[p[0]][p[1]-1].value === 0
-                    &&
-                    grid[p[0]][p[1]-1].visible === false
-                    ){
-                    
-                    grid[p[0]][p[1]-1].visible =true
-                    let n = grid[p[0]][p[1]-1]
-                    checkAround(n,grid)
-                }
-                //bottom row
-                if(
-                    p[1] <= grid[p[0]].length 
-                    && 
-                    grid[p[0]][p[1]+1]
-                    &&
-                    grid[p[0]][p[1]+1].value === 0
-                    &&
-                    grid[p[0]][p[1]+1].visible === false
-                    ){
-                    
-                    grid[p[0]][p[1]+1].visible = true
-                    let n = grid[p[0]][p[1]+1]
-                    checkAround(n,grid)
-                }
-            //next column 
-            if(grid[p[0]+1] <= grid.length-1 && grid[p[0]+1]){
-    
-                //top row
-                if(
-                    p[1] > 0
-                    &&
-                    grid[p[0]+1][p[1]-1]
-                    &&
-                    grid[p[0]+1][p[1]-1].value === 0
-                    &&
-                    grid[p[0]+1][p[1]-1].visible === true
-                    ){
-                    
-                    grid[p[0]+1][p[1]-1].visible = true
-                    let n = grid[p[0]+1][p[1]-1]
-                    checkAround(n,grid)
-                }
-                //middle row
-                if(
-                    grid[p[0]+1][p[1]].value === 0
-                    &&
-                    grid[p[0]+1][p[1]]
-                    &&
-                    grid[p[0]+1][p[1]].visible === false
-                    ){
-                  
-                    grid[p[0]+1][p[1]].visible = true
-                    let n = grid[p[0]+1][p[1]]
-                    checkAround(n,grid)
-                }
-                //bottom row        
-                if(
-                    p[1] <= grid[p[0]].length 
-                    &&
-                    grid[p[0]+1][p[1]+1]
-                    &&
-                    grid[p[0]+1][p[1]+1].value === 0
-                    &&
-                    grid[p[0]+1][p[1]+1].visible === false
-                    ){
-                    
-                    grid[p[0]+1][p[1]+1].visible = true
-                    let n = grid[p[0]+1][p[1]+1]
-                    checkAround(n,grid)
-                }
-            }
-            return grid;
-            
-        }
-
-        const style = new PIXI.TextStyle({
-            fontFamily: 'Arial',
-            fontSize: 16,
-            fontStyle: 'italic',
-            fontWeight: 'bold',
-            fill: ['#ffffff', '#00ff99'], // gradient
-            stroke: '#4a1850',
-            strokeThickness: 5,
-            dropShadow: true,
-            dropShadowColor: '#000000',
-            dropShadowBlur: 4,
-            dropShadowAngle: Math.PI / 6,
-            dropShadowDistance: 6,
-            wordWrap: true,
-            wordWrapWidth: 440,
-            lineJoin: 'round',
         });
+    });
+};
+const handleClick = (row) => {
+    if (row.value === "m") {
+   
+
+        GRID.map((rows, columnIndex) => {
+            rows.map((row, rowIndex) => {
+                GRID[row.coordinates[0]][row.coordinates[1]].visible = true;
+            });
+            Draw();
+        });
+    }
+
+    if (row.value > 0) {
+        GRID[row.coordinates[0]][row.coordinates[1]].visible = true;
+        Draw();
+    }
+
+    if (row.value === 0) {
+        GRID[row.coordinates[0]][row.coordinates[1]].visible = true;
+        let g = checkAround(row, GRID);
+        GRID = g;
+        Draw();
+    }
+};
+export const checkAround = (row, grid) => {
+    let p = row.coordinates;
+
+    // 8 checks
+    //previous column
+    if (p[0] === 0) {
+    } else {
+        //top row
+        if (
+            p[1] > 0 &&
+            grid[p[0] - 1][p[1] - 1] &&
+            grid[p[0] - 1][p[1] - 1].value === 0 &&
+            grid[p[0] - 1][p[1] - 1].visible === false
+        ) {
+            grid[p[0] - 1][p[1] - 1].visible = true;
+            let n = grid[p[0] - 1][p[1] - 1];
+            checkAround(n, grid);
+        }
+        //middle row
+        if (
+            grid[p[0] - 1][p[1]] &&
+            grid[p[0] - 1][p[1]].value === 0 &&
+            grid[p[0] - 1][p[1]].visible === false
+        ) {
+            grid[p[0] - 1][p[1]].visible = true;
+            let n = grid[p[0] - 1][p[1]];
+            checkAround(n, grid);
+        }
+        //bottom row
+        if (
+            p[1] <= grid[p[0]].length &&
+            grid[p[0] - 1][p[1] + 1] &&
+            grid[p[0] - 1][p[1] + 1].value === 0 &&
+            grid[p[0] - 1][p[1] + 1].visible === false
+        ) {
+            grid[p[0] - 1][p[1] + 1].visible = true;
+            let n = grid[p[0] - 1][p[1] + 1];
+            checkAround(n, grid);
+        }
+    }
+    //same column
+    // top row
+    if (
+        p[1] > 0 &&
+        grid[p[0]][p[1] - 1] &&
+        grid[p[0]][p[1] - 1].value === 0 &&
+        grid[p[0]][p[1] - 1].visible === false
+    ) {
+        grid[p[0]][p[1] - 1].visible = true;
+        let n = grid[p[0]][p[1] - 1];
+        checkAround(n, grid);
+    }
+    //bottom row
+    if (
+        p[1] <= grid[p[0]].length &&
+        grid[p[0]][p[1] + 1] &&
+        grid[p[0]][p[1] + 1].value === 0 &&
+        grid[p[0]][p[1] + 1].visible === false
+    ) {
+        grid[p[0]][p[1] + 1].visible = true;
+        let n = grid[p[0]][p[1] + 1];
+        checkAround(n, grid);
+    }
+    //next column
+    if (grid[p[0] + 1] <= grid.length - 1 && grid[p[0] + 1]) {
+        //top row
+        if (
+            p[1] > 0 &&
+            grid[p[0] + 1][p[1] - 1] &&
+            grid[p[0] + 1][p[1] - 1].value === 0 &&
+            grid[p[0] + 1][p[1] - 1].visible === true
+        ) {
+            grid[p[0] + 1][p[1] - 1].visible = true;
+            let n = grid[p[0] + 1][p[1] - 1];
+            checkAround(n, grid);
+        }
+        //middle row
+        if (
+            grid[p[0] + 1][p[1]].value === 0 &&
+            grid[p[0] + 1][p[1]] &&
+            grid[p[0] + 1][p[1]].visible === false
+        ) {
+            grid[p[0] + 1][p[1]].visible = true;
+            let n = grid[p[0] + 1][p[1]];
+            checkAround(n, grid);
+        }
+        //bottom row
+        if (
+            p[1] <= grid[p[0]].length &&
+            grid[p[0] + 1][p[1] + 1] &&
+            grid[p[0] + 1][p[1] + 1].value === 0 &&
+            grid[p[0] + 1][p[1] + 1].visible === false
+        ) {
+            grid[p[0] + 1][p[1] + 1].visible = true;
+            let n = grid[p[0] + 1][p[1] + 1];
+            checkAround(n, grid);
+        }
+    }
+    return grid;
+};
+
+

@@ -1,13 +1,13 @@
 {
     "private": true,
-    "name": "boilerplate-webpack-babel",
-    "version": "1.2.1",
-    "description": "Starter with Webpack & Babel.js",
+    "name": "MineSweaper",
+    "version": "1.0.0",
+    "description": "The classic MineSweaper game",
     "license": "MIT",
     "author": {
-        "name": "Piotr Kowalski",
-        "email": "piecioshka@gmail.com",
-        "url": "https://piecioshka.pl"
+        "name": "Kontopodis Emmanouil",
+        "email": "kontopodis.em@gmail.com",
+        "url": "https://manuels-journal.com"
     },
     "scripts": {
         "clear": "rm -rf dist/",
@@ -32,10 +32,6 @@
         "webpack-cli": "^4.9.1",
         "webpack-dev-server": "^4.7.3",
         "webpack-merge": "^5.8.0"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/piecioshka/boilerplate-webpack-babel"
     },
     "dependencies": {
         "pixi.js": "^6.2.2"

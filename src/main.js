@@ -1,92 +1,87 @@
-import * as PIXI from 'pixi.js'
-import Grid from './scripts/grid'
+import * as PIXI from "pixi.js";
+import Grid from "./scripts/grid";
 import {
-    printWhite,
-    printNum,
-    checkAround,
-    printMine,
-    printEmpty
-} from './scripts/engine'
+Game,
+Draw
+} from "./scripts/engine";
 
-let dimensions = window.screen
-console.log(dimensions)
-    let app = new PIXI.Application({ width: 501, height: 500 ,backgroundAlpha: 0.5 });
-    
+import {Button} from './scripts/views'
 
-    const element = document.createElement('div');
-    
-    element.innerHTML = 'MineSweaper';
-    
-    document.body.appendChild(element)
-    
-    document.body.appendChild(app.view);
-
-
-    var grid = Grid(20,20,50)
- 
+let screen = window.screen;
 
 
 
-    const handleClick = (row) =>{
-console.log(row)
-        if (row.value==="m"){     
-                grid.map((rows,columnIndex)=>{
-                    rows.map((row,rowIndex)=>{
-                        grid[row.coordinates[0]][row.coordinates[1]].visible = true
-                    })
-                    Draw()
-                })
-    
-        }
-    
-        if (row.value>0){
-            grid[row.coordinates[0]][row.coordinates[1]].visible = true
-            Draw()
-        }
-    
-        if(row.value===0){
-   
-            grid[row.coordinates[0]][row.coordinates[1]].visible = true
-            let g = checkAround(row, grid)
-            grid = g
-            Draw()
-        }
-        
-    }
+
+let app = new PIXI.Application({
+    width: screen.width,
+    height: screen.height,
+    backgroundAlpha: 0.5,
+});
+
+document.body.appendChild(app.view);
+let Menu = new PIXI.Container()
+
+app.stage.addChild(Menu)
+
+const button5 = Button("5X5",[0,5])
+button5.interactive = true;
+button5.on("pointerdown",()=>{
+    start5()
+})
+Menu.addChild(button5)
+
+const button10 = Button("10X10",[button5.width,5])
+button10.interactive = true;
+button10.on("pointerdown",()=>{
+    start10()
+})
+Menu.addChild(button10)
+
+const button20 = Button("20X20",[(button10.width+button5.width),5])
+button20.interactive = true;
+button20.on("pointerdown",()=>{
+    start20()
+})
+Menu.addChild(button20)
+Menu.x = (screen.width-Menu.width)/2
 
 
-    const Draw=()=>{
-        app.stage.removeChildren()
-        grid.map((rows,columnIndex)=>{
 
-            rows.map((row,rowIndex)=>{
-
-if(row.visible === true){
-
-    if (row.value==="m"){
-        printMine(row,app)
-        }
-
-if (row.value>0){
-printNum(row,app)
-}
-
-if(row.value===0){
-    printWhite(row, app)
-
+const start5 = ()=>{
+    const container = app.stage.getChildByName("Container")
+    console.log(container)
+    app.stage.removeChild(container)
   
+    let COLUMNS = 5;
+    let ROWS = 5;
+    let MINES = 10;
+    
+    Game(COLUMNS,ROWS,MINES,app)
+    Draw();
 }
-}else{
-    printEmpty(row,app,handleClick)
+
+const start10 = ()=>{
+    const container = app.stage.getChildByName("Container")
+    console.log(container)
+    app.stage.removeChild(container)
+    let COLUMNS = 10;
+    let ROWS = 10;
+    let MINES = 25;
+    
+    Game(COLUMNS,ROWS,MINES,app)
+    Draw();
 }
 
-   
-            })
-  
+const start20 = ()=>{
+    const container = app.stage.getChildByName("Container")
+    console.log(container)
+    app.stage.removeChild(container)
+    let COLUMNS = 20;
+    let ROWS = 20;
+    let MINES = 50;
+    
+    Game(COLUMNS,ROWS,MINES,app)
+    Draw();
+}
 
 
-        })
-
-    }
-Draw()
-        

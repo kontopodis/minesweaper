@@ -1,4 +1,8 @@
+var COLS = 0;
+var ROWS = 0;
 const make2dArray = (rows,cols) => {
+    COLS = cols;
+    ROWS = rows;
     return new Array(rows).fill(0).map((row) => {
         return new Array(cols).fill(0);
     });
@@ -14,8 +18,8 @@ const fillGridWithMines = (grid, positions) => {
 const setMinesPositions = (level) => {
     let positions = new Array(level).fill(0);
     positions.map((pos, index) => {
-        let positionCol = Math.floor(Math.random() * 20);
-        let positionRow = Math.floor(Math.random() * 20);
+        let positionCol = Math.floor(Math.random() * COLS);
+        let positionRow = Math.floor(Math.random() * ROWS);
 
         positions[index] = [positionCol, positionRow];
     });
