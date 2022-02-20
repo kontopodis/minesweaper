@@ -8,8 +8,8 @@ This project was an attempt to grasp some of Javascript's concepts. It's build w
 - Vanilla Javascript
 - And love
 
-## A Live demo lives [HERE]("https://www.manuels-journal.com/games/minesweaper/index.html")
-
+## Live demo
+ [HERE]("https://www.manuels-journal.com/games/minesweaper/index.html")
 # How to run it
 
 ```bash
@@ -37,3 +37,4 @@ or
 ```js
 npm run build:production
 ```
+
