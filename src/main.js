@@ -1,7 +1,15 @@
 import * as PIXI from 'pixi.js'
 import Grid from './scripts/grid'
-import {printWhite} from './scripts/engine'
+import {
+    printWhite,
+    printNum,
+    checkAround,
+    printMine,
+    printEmpty
+} from './scripts/engine'
 
+let dimensions = window.screen
+console.log(dimensions)
     let app = new PIXI.Application({ width: 501, height: 500 ,backgroundAlpha: 0.5 });
     
 
@@ -14,76 +22,67 @@ import {printWhite} from './scripts/engine'
     document.body.appendChild(app.view);
 
 
-    const grid = Grid(20,20)
-    console.log(grid)
-  
-    const handleClick = (e,row,p) =>{
+    var grid = Grid(20,20,50)
+ 
 
-        if (row==="m"){     
-                const cell = new PIXI.Graphics();
 
-                cell.lineStyle(1, 0x000000, 1);
 
-                cell.beginFill(0x999999);
-                cell.drawRect(p[0]*25+2, p[1]*25, 23, 23);
-                cell.endFill();
-
-                cell.moveTo(p[0]*25+2, p[1]*25)
-                cell.lineStyle(1, 0x000000, 1);
-
-                cell.beginFill(0xf90000, 1);
-                cell.drawCircle(p[0]*25+13, p[1]*25+12, 5);
-                cell.moveTo(p[0]*25+2, p[1]*25)
-                cell.lineTo(p[0]*25+25, p[1]*25+25)
-                cell.moveTo(p[0]*25+2, p[1]*25+25)
-                cell.lineTo(p[0]*25+25, p[1]*25)
-                cell.endFill();
-        
-                cell.interactive = false;
-            
-                app.stage.addChild(cell);
-
-            }
-        if (row>0){
-            const cell = new PIXI.Graphics();
-            cell.lineStyle(1, 0x000000, 1);
-            cell.beginFill(0x999999);
-            cell.drawRect(p[0]*25+2, p[1]*25, 23, 23);
-            cell.endFill();
-            cell.interactive = false;
-            const label = new PIXI.Text(row,style);
-            label.x = p[0]*25;
-            label.y = p[1]*25;
-            console.log(p)
-            app.stage.addChild(cell);
-            app.stage.addChild(label)
+    const handleClick = (row) =>{
+console.log(row)
+        if (row.value==="m"){     
+                grid.map((rows,columnIndex)=>{
+                    rows.map((row,rowIndex)=>{
+                        grid[row.coordinates[0]][row.coordinates[1]].visible = true
+                    })
+                    Draw()
+                })
+    
         }
-
-        if(row===0){
-            printWhite(p, app)
-            
+    
+        if (row.value>0){
+            grid[row.coordinates[0]][row.coordinates[1]].visible = true
+            Draw()
+        }
+    
+        if(row.value===0){
+   
+            grid[row.coordinates[0]][row.coordinates[1]].visible = true
+            let g = checkAround(row, grid)
+            grid = g
+            Draw()
         }
         
     }
 
+
     const Draw=()=>{
-        grid.map((rows,index)=>{
+        app.stage.removeChildren()
+        grid.map((rows,columnIndex)=>{
+
+            rows.map((row,rowIndex)=>{
+
+if(row.visible === true){
+
+    if (row.value==="m"){
+        printMine(row,app)
+        }
+
+if (row.value>0){
+printNum(row,app)
+}
+
+if(row.value===0){
+    printWhite(row, app)
+
   
-            for (let i=0;i<=19;i++){
-               
-                const cell = new PIXI.Graphics();
-                cell.lineStyle(1, 0x000000, 1);
-                cell.beginFill(0x999999);
-                cell.drawRect(index*25+2, i*25, 23, 23);
-                cell.endFill();
-                cell.interactive = true;
-                cell.on("pointerdown",(e)=>{
-                    handleClick(e,rows[i],[index,i])
-                
-                })
-                
-                app.stage.addChild(cell);
-            }
+}
+}else{
+    printEmpty(row,app,handleClick)
+}
+
+   
+            })
+  
 
 
         })
@@ -91,20 +90,3 @@ import {printWhite} from './scripts/engine'
     }
 Draw()
         
-const style = new PIXI.TextStyle({
-    fontFamily: 'Arial',
-    fontSize: 16,
-    fontStyle: 'italic',
-    fontWeight: 'bold',
-    fill: ['#ffffff', '#00ff99'], // gradient
-    stroke: '#4a1850',
-    strokeThickness: 5,
-    dropShadow: true,
-    dropShadowColor: '#000000',
-    dropShadowBlur: 4,
-    dropShadowAngle: Math.PI / 6,
-    dropShadowDistance: 6,
-    wordWrap: true,
-    wordWrapWidth: 440,
-    lineJoin: 'round',
-});
