@@ -1,5 +1,43 @@
 import * as PIXI from 'pixi.js'
-export const Button = (text="label",p = [0,0],s=[100,40]) =>{
+
+export const printFlag = (row, handleClick) =>{
+    console.log("print flag")
+    const cell = new PIXI.Graphics();
+    cell.lineStyle(1, 0x000000, 1);
+    cell.beginFill(0x999999);
+    cell.drawRect(row.coordinates[0] * 25 + 2, row.coordinates[1] * 25, 23, 23);
+    cell.moveTo(row.coordinates[0] * 25 + 13, row.coordinates[1] * 25)
+    cell.lineTo(row.coordinates[0] * 25 + 13, row.coordinates[1] * 25+25)
+    cell.endFill();
+    cell.interactive = true;
+
+    cell.on("rightclick", (e) => {
+        removeFlag(row,handleClick)
+    });
+
+    return cell;
+}
+
+export const Score = (value,p = [0,0],s=[150,40])=>{
+    const cell = new PIXI.Graphics();
+    cell.lineStyle(1, 0x999999, 1);
+    cell.beginFill(0x000000);
+    cell.drawRect(p[0],p[1],s[0],s[1]);
+    cell.endFill();
+    cell.interactive = true;
+
+    const label = new PIXI.Text(value,style);
+    label.name="Value"
+
+    label.x = p[0]+(s[0]-label.width)/2;
+    label.y = p[1]+(s[1]-label.height)/2;
+
+    console.log(label.x,label.y)
+    cell.addChild(label)
+    
+    return cell
+}
+export const Button = (text="label",p = [0,0],s=[40,40]) =>{
     const cell = new PIXI.Graphics();
     cell.lineStyle(1, 0x000000, 1);
     cell.beginFill(0x999999);
@@ -7,7 +45,7 @@ export const Button = (text="label",p = [0,0],s=[100,40]) =>{
     cell.endFill();
     cell.interactive = true;
 
-    const label = new PIXI.Text(text);
+    const label = new PIXI.Text(text,style);
 
     label.x = p[0]+(s[0]-label.width)/2;
     label.y = p[1]+(s[1]-label.height)/2;
@@ -19,7 +57,7 @@ export const Button = (text="label",p = [0,0],s=[100,40]) =>{
 }
 
 
-export const printEmpty = (row, container, handleClick) => {
+export const printEmpty = (row, handleClick) => {
     const cell = new PIXI.Graphics();
     cell.lineStyle(1, 0x000000, 1);
     cell.beginFill(0x999999);
@@ -27,23 +65,26 @@ export const printEmpty = (row, container, handleClick) => {
     cell.endFill();
     cell.interactive = true;
     cell.on("pointerdown", (e) => {
-        handleClick(row);
+    
+        handleClick(e, row);
+        
     });
+    
 
-    container.addChild(cell);
+    return cell;
 };
 
-export const printWhite = (row, container) => {
+export const printWhite = (row) => {
     const cell = new PIXI.Graphics();
     cell.lineStyle(1, 0xffffff, 1);
     cell.beginFill(0xffffff);
     cell.drawRect(row.coordinates[0] * 25 + 2, row.coordinates[1] * 25, 23, 23);
     cell.endFill();
     cell.interactive = false;
-    container.addChild(cell);
+    return cell;
 };
 
-export const printNum = (row, container) => {
+export const printNum = (row) => {
     const cell = new PIXI.Graphics();
     cell.lineStyle(1, 0x000000, 1);
     cell.beginFill(0x999999);
@@ -53,12 +94,11 @@ export const printNum = (row, container) => {
     const label = new PIXI.Text(row.value, style);
     label.x = row.coordinates[0] * 25;
     label.y = row.coordinates[1] * 25;
-
-    container.addChild(cell);
-    container.addChild(label);
+    cell.addChild(label)
+    return cell;
 };
 
-export const printMine = (row, container) => {
+export const printMine = (row) => {
     const cell = new PIXI.Graphics();
 
     cell.lineStyle(1, 0x000000, 1);
@@ -84,7 +124,7 @@ export const printMine = (row, container) => {
 
     cell.interactive = false;
 
-    container.addChild(cell);
+    return cell;
 };
 
 export const style = new PIXI.TextStyle({

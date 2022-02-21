@@ -3,12 +3,17 @@ import {
     printEmpty,
     printWhite,
     printNum,
-    printMine
+    printMine,
+    Score
 } from './views'
 import Grid from './grid'
 var GRID= [];
 var Container;
-export const Game = (COLUMNS,ROWS,MINES,app)=>{
+var SCORE_Container;
+var SCORE_Value = 0 ;
+
+export const Game = (COLUMNS,ROWS,MINES,score,app)=>{
+
 
     GRID = Grid(COLUMNS, ROWS, MINES);
 
@@ -18,59 +23,94 @@ export const Game = (COLUMNS,ROWS,MINES,app)=>{
     container.y = 50
     app.stage.addChild(container)
     Container = container
-    
-
-    
+    SCORE_Container = score;  
 
     
 }
 export const Draw = () => {
     Container.removeChildren();
 
+let mines = 0;
+let hidden = 0;
     GRID.map((rows, columnIndex) => {
         rows.map((row, rowIndex) => {
+            if(row.value === "m"){ mines++}
+
             if (row.visible === true) {
+
+
                 if (row.value === "m") {
-                    printMine(row, Container);
+                    let mine = printMine(row);
+                    Container.addChild(mine)
                 }
 
                 if (row.value > 0) {
-                    printNum(row, Container);
+                   let num = printNum(row);
+                   Container.addChild(num)
                 }
 
                 if (row.value === 0) {
-                    printWhite(row, Container);
+                    let white = printWhite(row);
+                    Container.addChild(white)
                 }
             } else {
-                printEmpty(row, Container, handleClick);
+                hidden++
+                let empty = printEmpty(row, handleClick);
+                Container.addChild(empty)
             }
+
+        
         });
     });
+    console.log(hidden,mines)
+
+    if(hidden===mines){
+        SCORE_Value = SCORE_Value + mines;
+        const val = SCORE_Container.getChildByName("Value");
+        val.text = "Won( "+JSON.stringify(SCORE_Value)+" )";
+        SCORE_Container.renderCanvas
+        console.log("WON")}
 };
-const handleClick = (row) => {
-    if (row.value === "m") {
+
+const handleClick = (e, row) => {
+
+
+        if (row.value === "m") {
    
 
-        GRID.map((rows, columnIndex) => {
-            rows.map((row, rowIndex) => {
-                GRID[row.coordinates[0]][row.coordinates[1]].visible = true;
+            GRID.map((rows, columnIndex) => {
+                rows.map((row, rowIndex) => {
+                    GRID[row.coordinates[0]][row.coordinates[1]].visible = true;
+                });
+                Draw();
             });
+        }
+    
+        if (row.value > 0) {
+            SCORE_Value++;
+            GRID[row.coordinates[0]][row.coordinates[1]].visible = true;
+            setScore(SCORE_Value);
             Draw();
-        });
-    }
+        }
+    
+        if (row.value === 0) {
+            SCORE_Value++;
+            GRID[row.coordinates[0]][row.coordinates[1]].visible = true;
+            let g = checkAround(row, GRID);
+            GRID = g;
+            setScore(SCORE_Value);
+            Draw();
+        }
 
-    if (row.value > 0) {
-        GRID[row.coordinates[0]][row.coordinates[1]].visible = true;
-        Draw();
-    }
 
-    if (row.value === 0) {
-        GRID[row.coordinates[0]][row.coordinates[1]].visible = true;
-        let g = checkAround(row, GRID);
-        GRID = g;
-        Draw();
-    }
 };
+
+export const setScore = (value)=>{
+    SCORE_Value = value
+    const val = SCORE_Container.getChildByName("Value");
+    val.text = SCORE_Value
+    SCORE_Container.renderCanvas
+}
 export const checkAround = (row, grid) => {
     let p = row.coordinates;
 
@@ -135,7 +175,9 @@ export const checkAround = (row, grid) => {
         checkAround(n, grid);
     }
     //next column
-    if (grid[p[0] + 1] <= grid.length - 1 && grid[p[0] + 1]) {
+ 
+    if (p[0] + 1 <= grid.length - 1) {
+        console.log("passed")
         //top row
         if (
             p[1] > 0 &&
