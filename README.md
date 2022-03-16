@@ -6,10 +6,7 @@ This project was an attempt to grasp some of Javascript's concepts. It's build w
 - WebPack
 - Babel
 - Vanilla Javascript
-- And love
-
-## Live demo
- [HERE](https://www.manuels-journal.com/games/minesweaper/index.html)
+- And lo
 # How to run it
 
 ```bash
